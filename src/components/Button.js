@@ -1,13 +1,14 @@
 import styled from 'styled-components';
 
 const Button = styled.button`
-display: inline-block;
+  display: inline-block;
+  width: ${props => props.block ? "100%" : "auto"};
   background: ${props => {
     if (props.variant === "light") return "#fff";
-    return "#4BCFA0";
+    return props.theme.colors.primary;
   }};
   color: ${props => {
-    if (props.variant === "light") return "#4BCFA0";
+    if (props.variant === "light") return props.theme.colors.primary;
     return "#fff";
   }};
   outline: none;
@@ -17,20 +18,20 @@ display: inline-block;
     return "16px 48px 14px";
   }};
   border: ${props => {
-    if (props.variant === "light") return "2px solid rgba(0,0,0,0.1)";
-    return "2px solid transparent";
+    if (props.variant === "light") return "1px solid rgba(0,0,0,0.1)";
+    return "1px solid transparent";
   }};
-  border-radius: 16px;
+  border-radius: ${props => props.theme.borderRadius.medium};
   text-align: center;
   cursor: pointer;
   font-weight: 600;
   &:hover {
     background: ${props => {
-      if (props.variant === "light") return "#4BCFA0";
-      return "#50DAA8";
+      if (props.variant === "light") return props.theme.colors.primary;
+      return props.theme.colors.primaryLight;
     }};
     color: #fff;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
   }
 `;
 

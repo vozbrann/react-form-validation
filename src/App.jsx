@@ -1,10 +1,13 @@
-import React from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import React, {useState} from 'react';
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import theme from './theme';
+
 import CardsList from './components/CardsList';
 import Button from './components/Button';
+import Modal from './components/Modal';
+import OrderForm from './components/OrderForm';
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
   * {
     box-sizing: border-box;
     margin: 0;
@@ -12,7 +15,7 @@ const GlobalStyle = createGlobalStyle`
   }
   body {
     font-family: 'Roboto', sans-serif;
-    background-color: #F2F2F2;
+    background-color: ${props => props.theme.colors.gray};
   }
 `;
 
@@ -23,17 +26,31 @@ const BottomControl = styled.div`
   text-align: center;
 `;
 
-
 function App() {
+  const [show, setShow] = useState(false);
+
+  const showModal = () => {
+    setShow(true);
+  };
+
+  const hideModal = () => {
+    setShow(false);
+  };
+
   return (
     <React.Fragment>
-      <GlobalStyle />
-      <Container>
-        <CardsList/>
-        <BottomControl>
-          <Button>Buy cheapest</Button>
-        </BottomControl>
-      </Container>
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <Modal show={show} handleClose={hideModal}>
+          <OrderForm/>
+        </Modal>
+        <Container>
+          <CardsList/>
+          <BottomControl>
+            <Button onClick={showModal}>Buy cheapest</Button>
+          </BottomControl>
+        </Container>
+      </ThemeProvider>
     </React.Fragment>
   );
 }
