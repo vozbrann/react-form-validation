@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, {css} from 'styled-components';
+import Button from './Button';
 
 const InputContainer = styled.div`
   width: 100%;
@@ -63,7 +64,9 @@ const Input = ({className, ...props}) => {
     <InputContainer className={className} {...props} >
       <StyledInput {...props}/>
       {props.error &&
-        <ErrorMessage>{props.error}</ErrorMessage>
+        <>
+          <ErrorMessage>{props.error}</ErrorMessage>
+        </>
       }
     </InputContainer>
   );

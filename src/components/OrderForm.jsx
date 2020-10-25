@@ -51,8 +51,39 @@ const Item = styled.div`
   text-align: center;
 `;
 
+const nameValidation = (name) => {
+  if (name.trim() === '') {
+    return 'This field in required';
+  }
+  if (/[^a-zA-Z -]/.test(name)) {
+    return 'Only letters allowed';
+  }
+  return null;
+};
+
+const numberValidation = number => {
+  if (number.trim() === '') {
+    return 'This field in required';
+  }
+  if (!/^\d+$/.test(number)) {
+    return 'Only numbers allowed';
+  }
+  if (number.trim().length !== 12) {
+    return 'Should contain 12 characters';
+  }
+  return null;
+};
+
+const validate = {
+  name: nameValidation,
+  number: numberValidation,
+};
+
 const OrderForm = () => {
-  const [userData, setUserData] = useState({name:"", number:""});
+  const [userData, setUserData] = useState({name: '', number: ''});
+
+  const [errors, setErrors] = React.useState({});
+  const [touched, setTouched] = React.useState({});
 
   const selectedProduct = useSelector(state => state.product.selectedProduct);
   const orderLoading = useSelector(state => state.order.orderLoading);
@@ -61,13 +92,68 @@ const OrderForm = () => {
   const dispatch = useDispatch();
 
   const handleInputChange = (e) => {
-    setUserData({...userData, [e.target.name]:e.target.value});
+    setUserData({...userData, [e.target.name]: e.target.value});
+    setTouched({
+      ...touched,
+      [e.target.name]: true,
+    });
+  };
+
+  const clearInput = (name) => {
+    setUserData({...userData, [name]: ""});
+  };
+
+  const handleBlur = (e) => {
+    const {name, value} = e.target;
+    // remove whatever error was there previously
+    const {[name]: removedError, ...rest} = errors;
+
+    // check for a new error
+    const error = validate[name](value);
+
+    // // validate the field if the value has been touched
+    setErrors({
+      ...rest,
+      ...(error && {[name]: touched[name] && error}),
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(sendOrder(userData));
-    setUserData({name:"", number:""});
+
+    // validate the form
+    const formValidation = Object.keys(userData).reduce(
+      (acc, key) => {
+        const newError = validate[key](userData[key]);
+        const newTouched = {[key]: true};
+        return {
+          errors: {
+            ...acc.errors,
+            ...(newError && {[key]: newError}),
+          },
+          touched: {
+            ...acc.touched,
+            ...newTouched,
+          },
+        };
+      },
+      {
+        errors: {...errors},
+        touched: {...touched},
+      },
+    );
+    setErrors(formValidation.errors);
+    setTouched(formValidation.touched);
+
+    if (
+      !Object.values(formValidation.errors).length && // errors object is empty
+      Object.values(formValidation.touched).length ===
+      Object.values(userData).length && // all fields were touched
+      Object.values(formValidation.touched).every(t => t === true) // every touched field is true
+    ) {
+      dispatch(sendOrder(userData));
+      setUserData({name: '', number: ''});
+    }
   };
 
   return (
@@ -79,9 +165,29 @@ const OrderForm = () => {
           <Title>{selectedProduct.name}</Title>
           <Price>{selectedProduct.price}</Price>
         </Item>
-        <StyledInput value={userData.name} onChange={handleInputChange} name="name" block placeholder="Name"/>
-        <StyledInput type="number" value={userData.number} onChange={handleInputChange} name="number" block placeholder="Number"/>
-        <StyledSubmitButton disabled={orderLoading} type="submit" block><span>ORDER</span></StyledSubmitButton>
+        <StyledInput
+          value={userData.name}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          clearInput={() => clearInput("name")}
+          name="name"
+          block
+          placeholder="Name"
+          error={touched.name && errors.name}
+        />
+        <StyledInput
+          type="text"
+          value={userData.number}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          clearInput={() => clearInput("number")}
+          name="number"
+          block
+          placeholder="Number"
+          error={touched.number && errors.number}
+        />
+        <StyledSubmitButton disabled={orderLoading} type="submit"
+                            block><span>ORDER</span></StyledSubmitButton>
       </>
       }
 
