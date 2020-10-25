@@ -36,7 +36,7 @@ const CloseButton = styled(Button)`
   color: #000;
   background-color: ${props => props.theme.colors.gray};
   
-  &:hover {
+  &:hover:not([disabled]) {
     color: #000;
     background-color: #d7d7d7;
   }

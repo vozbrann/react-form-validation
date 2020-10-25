@@ -1,11 +1,13 @@
 import React, {useState} from 'react';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+
 import theme from './theme';
 
 import CardsList from './components/CardsList';
-import Button from './components/Button';
 import Modal from './components/Modal';
 import OrderForm from './components/OrderForm';
+import {useDispatch, useSelector} from 'react-redux';
+import {setSelectedProduct} from './store/actions/productActions';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -22,33 +24,25 @@ const GlobalStyle = createGlobalStyle`
 const Container = styled.div`
   padding: 60px 152px;
 `;
-const BottomControl = styled.div`
-  text-align: center;
-`;
 
 function App() {
-  const [show, setShow] = useState(false);
+  const selectedProduct = useSelector(state => state.product.selectedProduct);
 
-  const showModal = () => {
-    setShow(true);
-  };
+  const dispatch = useDispatch();
 
-  const hideModal = () => {
-    setShow(false);
+  const removeSelected = () => {
+    dispatch(setSelectedProduct(null));
   };
 
   return (
     <React.Fragment>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <Modal show={show} handleClose={hideModal}>
+        <Modal show={selectedProduct} handleClose={removeSelected}>
           <OrderForm/>
         </Modal>
         <Container>
           <CardsList/>
-          <BottomControl>
-            <Button onClick={showModal}>Buy cheapest</Button>
-          </BottomControl>
         </Container>
       </ThemeProvider>
     </React.Fragment>

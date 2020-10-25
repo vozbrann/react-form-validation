@@ -2,7 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from './Button';
 
+import {setSelectedProduct} from '../store/actions/productActions';
+
 import {Category, Title, Price} from './StyledItem';
+import {useDispatch} from 'react-redux';
 
 const StyledCard = styled.div`
   background-color: #fff;
@@ -17,15 +20,23 @@ const CardBottom = styled.div`
  margin-top: 40px;
 `;
 
-const Card = () => {
+const Card = ({product}) => {
+  const {name, category, price} = product;
+
+  const dispatch = useDispatch();
+
+  const handleSelectProduct = () => {
+    dispatch(setSelectedProduct(product));
+  };
+
   return (
     <StyledCard>
-      <Category>Drinks</Category>
-      <Title>Orange Juice</Title>
+      <Category>{category}</Category>
+      <Title>{name}</Title>
       <CardBottom>
-        <Price>14.99</Price>
+        <Price>{price}</Price>
         <div>
-          <Button variant="light" size="sm">BUY</Button>
+          <Button onClick={handleSelectProduct} variant="light" size="sm">BUY</Button>
         </div>
       </CardBottom>
     </StyledCard>

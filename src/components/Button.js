@@ -25,13 +25,20 @@ const Button = styled.button`
   text-align: center;
   cursor: pointer;
   font-weight: 600;
-  &:hover {
+  &:hover:not([disabled]) {
     background: ${props => {
       if (props.variant === "light") return props.theme.colors.primary;
       return props.theme.colors.primaryLight;
     }};
     color: #fff;
     border: 1px solid transparent;
+  }
+  
+  &:disabled,
+  &[disabled]{
+    pointer-events: none;
+    opacity: 70%;
+    cursor: auto;
   }
 `;
 

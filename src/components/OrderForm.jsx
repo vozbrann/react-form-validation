@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Category, Price, Title} from './StyledItem';
 import Button from './Button';
 import Input from './Input';
+import {useDispatch, useSelector} from 'react-redux';
+import {sendOrder} from '../store/actions/orderActions';
 
 const StyledOrderForm = styled.form`
   display: flex;
@@ -32,7 +34,7 @@ const StyledSubmitButton = styled(Button)`
     }
   }
   
-  &:hover {
+  &:hover:not([disabled]) {
     span {
       transform: translate(-8px, 0);
       &:after {
@@ -50,16 +52,39 @@ const Item = styled.div`
 `;
 
 const OrderForm = () => {
+  const [userData, setUserData] = useState({name:"", number:""});
+
+  const selectedProduct = useSelector(state => state.product.selectedProduct);
+  const orderLoading = useSelector(state => state.order.orderLoading);
+  const orderError = useSelector(state => state.order.orderError);
+
+  const dispatch = useDispatch();
+
+  const handleInputChange = (e) => {
+    setUserData({...userData, [e.target.name]:e.target.value});
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(sendOrder(userData));
+    setUserData({name:"", number:""});
+  };
+
   return (
-    <StyledOrderForm>
-      <Item>
-        <Category>Drinks</Category>
-        <Title>Orange Juice</Title>
-        <Price>14.99</Price>
-      </Item>
-      <StyledInput error="Name should not contain a numbers" block placeholder="Name"/>
-      <StyledInput block placeholder="Number"/>
-      <StyledSubmitButton block><span>ORDER</span></StyledSubmitButton>
+    <StyledOrderForm onSubmit={handleSubmit}>
+      {selectedProduct &&
+      <>
+        <Item>
+          <Category>{selectedProduct.category}</Category>
+          <Title>{selectedProduct.name}</Title>
+          <Price>{selectedProduct.price}</Price>
+        </Item>
+        <StyledInput value={userData.name} onChange={handleInputChange} name="name" block placeholder="Name"/>
+        <StyledInput type="number" value={userData.number} onChange={handleInputChange} name="number" block placeholder="Number"/>
+        <StyledSubmitButton disabled={orderLoading} type="submit" block><span>ORDER</span></StyledSubmitButton>
+      </>
+      }
+
     </StyledOrderForm>
   );
 };

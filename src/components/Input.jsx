@@ -31,6 +31,14 @@ const StyledInput = styled.input`
   transition: 0.2s;
   border: 1px solid rgba(0,0,0,0.2);
   
+  &::-webkit-outer-spin-button, ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  &[type=number] {
+    -moz-appearance: textfield;
+  }
+  
   &:focus, :hover {
     border-color: ${props => props.error ? props.theme.colors.danger : props.theme.colors.primary};
   }

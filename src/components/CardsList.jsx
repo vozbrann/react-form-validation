@@ -1,35 +1,60 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components'
 
-import Card from './Card';
+import {useDispatch, useSelector} from 'react-redux';
 
-const FlexList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+import Card from './Card';
+import {startFetchProducts, selectCheapestProduct} from '../store/actions/productActions';
+import Button from './Button';
+
+const FlexList = styled.div`  
+  display: grid;
+  grid-gap: 30px;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 40px;
 `;
 
-const FlexItem = styled.div`
-  flex: 0 32%;
-  margin-bottom: 2%; /* (100-32*3)/2 */
+const BottomControl = styled.div`
+  text-align: center;
 `;
 
 const CardsList = () => {
+  const productsList = useSelector(state => state.product.productsList);
+  const productsListLoading = useSelector(state => state.product.productsListLoading);
+  const productsListError = useSelector(state => state.product.productsListError);
+
+  const dispatch = useDispatch();
+
+  const handleSelectCheapest = () => {
+    dispatch(selectCheapestProduct());
+  };
+
+  useEffect(() => {
+    dispatch(startFetchProducts());
+  }, []);
+
+  if (productsListLoading) {
+    return (
+      <p>Loading</p>
+    )
+  }
+
+  if (productsListError) {
+    return (
+      <p>Error: {productsListError}</p>
+    )
+  }
   return (
-    <FlexList>
-      <FlexItem>
-        <Card/>
-      </FlexItem>
-      <FlexItem>
-        <Card/>
-      </FlexItem>
-      <FlexItem>
-        <Card/>
-      </FlexItem>
-      <FlexItem>
-        <Card/>
-      </FlexItem>
-    </FlexList>
+    <>
+      <FlexList>
+        {productsList.map((product, i) => (
+          <Card key={i} product={product}/>
+        ))}
+      </FlexList>
+      <BottomControl>
+        <Button onClick={handleSelectCheapest}>Buy cheapest</Button>
+      </BottomControl>
+    </>
   );
 };
 
