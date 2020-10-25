@@ -22,7 +22,19 @@ export const sendOrder = (userData) => {
       product: getState().product.selectedProduct,
       user: userData
     });
-    dispatch(setSelectedProduct(null));
-    dispatch(orderLoading(false));
+    api.post(`/orders/${getState().product.selectedProduct.id}`, userData, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    })
+      .then((response) => {
+        dispatch(setSelectedProduct(null));
+      })
+      .catch((error) => {
+        dispatch(orderError(error));
+      })
+      .finally(() => {
+        dispatch(orderLoading(false));
+      });
   };
 };

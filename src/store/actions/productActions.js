@@ -29,7 +29,7 @@ const productsListError = error => ({
 export const startFetchProducts = () => {
   return (dispatch, getState) => {
     dispatch(productsListLoading(true));
-    api.get('/b7d36eea-0b3f-414a-ba44-711b5f5e528e', {
+    api.get('/products', {
       headers: {
         'Accept': 'application/json',
       },
@@ -38,13 +38,7 @@ export const startFetchProducts = () => {
         dispatch(setProductsList(response.data));
       })
       .catch((error) => {
-        if (error.response) {
-          productsListError(error.response.data);
-        } else {
-          productsListError({
-            message: 'Something went wrong. Please try again',
-          });
-        }
+        dispatch(productsListError(error));
       })
       .finally(() => {
         dispatch(productsListLoading(false));

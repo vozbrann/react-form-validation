@@ -51,6 +51,11 @@ const Item = styled.div`
   text-align: center;
 `;
 
+const ErrorMessage = styled.p`
+  color: red;
+  margin-top: 15px;
+`;
+
 const nameValidation = (name) => {
   if (name.trim() === '') {
     return 'This field in required';
@@ -187,7 +192,10 @@ const OrderForm = () => {
           error={touched.number && errors.number}
         />
         <StyledSubmitButton disabled={orderLoading} type="submit"
-                            block><span>ORDER</span></StyledSubmitButton>
+                            block><span>{orderLoading ? "Loading..." : "ORDER"}</span></StyledSubmitButton>
+        {orderError&&
+          <ErrorMessage>{orderError.message}</ErrorMessage>
+        }
       </>
       }
 

@@ -35,20 +35,19 @@ const CardsList = () => {
 
   if (productsListLoading) {
     return (
-      <p>Loading</p>
+      <p>Loading...</p>
     )
   }
-
   if (productsListError) {
     return (
-      <p>Error: {productsListError}</p>
+      <p>Error: {productsListError.message}</p>
     )
   }
   return (
     <>
       <FlexList>
-        {productsList.map((product, i) => (
-          <Card key={i} product={product}/>
+        {productsList.map(product => (
+          <Card key={product.id} product={product}/>
         ))}
       </FlexList>
       <BottomControl>
